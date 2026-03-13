@@ -1,21 +1,20 @@
-%%writefile main.py
 import streamlit as st
 import fitz  # PyMuPDF
 import re
 import random
 
 HUMAN_OPENERS = [
-    "J'ai lu ton document de A à Z, page par page. Voilà ce que j'en retiens :",
-    "Après analyse complète (tout le PDF parcouru), mon verdict :",
-    "J'ai décortiqué chaque section. Les points clés, c'est :",
-    "Document lu intégralement. Ma synthèse détaillée :",
-    "Tout le contenu analysé. Ce qui ressort vraiment :"
+    "J'ai lu ton document de A a Z, page par page. Voila ce que j'en retiens :",
+    "Apres analyse complete (tout le PDF parcouru), mon verdict :",
+    "J'ai decortique chaque section. Les points cles, c'est :",
+    "Document lu integralement. Ma synthese detaillee :",
+    "Tout le contenu analyse. Ce qui ressort vraiment :"
 ]
 
 HUMAN_ANALYSIS = [
     "Ce passage page {page} est crucial car...",
-    "À la page {page}, l'auteur insiste sur...",
-    "Intéressant page {page} : {quote}",
+    "A la page {page}, l'auteur insiste sur...",
+    "Interessant page {page} : {quote}",
     "Chapitre {chap} page {page} explique parfaitement...",
     "Page {page} donne l'exemple concret de..."
 ]
@@ -24,8 +23,8 @@ TRANSITIONS_NATURELLES = [
     "Maintenant, creusons plus loin :",
     "Mais attends, y a mieux plus bas :",
     "Le clou du spectacle arrive page...",
-    "Et là-dessus, page {page}, c'est limpide :",
-    "Pour compléter, regardons page..."
+    "Et la-dessus, page {page}, c'est limpide :",
+    "Pour completer, regardons page..."
 ]
 
 class DocAnalyzer:
@@ -55,7 +54,7 @@ class DocAnalyzer:
 
 def human_rephrase(text):
     words = text.split()
-    synonyms = {"important":["essentiel","crucial","vital"], "problème":["souci","difficulté","challenge"], "solution":["approche","méthode","résolution"]}
+    synonyms = {"important":["essentiel","crucial","vital"], "probleme":["souci","difficulte","challenge"], "solution":["approche","methode","resolution"]}
     result = []
     for word in words[:50]:
         replaced=False
@@ -66,7 +65,7 @@ def human_rephrase(text):
                 break
         if not replaced:
             result.append(word)
-    return " ".join(result) + random.choice([" (c'est mon interprétation)"," en résumé"," voilà l'essentiel"])
+    return " ".join(result) + random.choice([" (c'est mon interpretation)"," en resume"," voila l'essentiel"])
 
 def generate_human_response(pages, task, query=""):
     total_pages = len(pages)
@@ -75,17 +74,17 @@ def generate_human_response(pages, task, query=""):
         relevant_pages = [p for p in pages if any(w in p["text"].lower() for w in words)]
     else:
         relevant_pages = pages[:5]
-    response = random.choice(HUMAN_OPENERS) + f" ({total_pages} pages analysées)\n\n"
+    response = random.choice(HUMAN_OPENERS) + f" ({total_pages} pages analysees)\n\n"
     response += "1. VISION GLOBALE\n"
     response += f"Le document contient {total_pages} pages et traite principalement de "
-    response += random.choice(["un sujet technique","une problématique business","des concepts avancés","une méthodologie précise"])
-    response += "\n\n2. ANALYSE DÉTAILLÉE\n"
+    response += random.choice(["un sujet technique","une problematique business","des concepts avances","une methodologie precise"])
+    response += "\n\n2. ANALYSE DETAILLEE\n"
     for i,page in enumerate(relevant_pages[:5]):
         quote = page["text"][:200].strip()
         summary = page["summary"][:120]
         response += random.choice(HUMAN_ANALYSIS).format(page=page["num"], chap=i+1, quote=quote[:50]+"...")
         response += f'\nExtrait page {page["num"]} : "{quote[:120]}..."'
-        response += f"\nInterprétation : {human_rephrase(summary)}\n\n"
+        response += f"\nInterpretation : {human_rephrase(summary)}\n\n"
     response += "3. CE QUE TU DOIS RETENIR\n"
     if pages:
         transition = random.choice(TRANSITIONS_NATURELLES).format(page=pages[0]["num"])
@@ -94,24 +93,24 @@ def generate_human_response(pages, task, query=""):
     response += human_rephrase(summaries)
     response += "\n\nMon avis perso : "
     response += random.choice([
-        "Document solide, mais faudrait creuser les implémentations.",
-        "Très bien structuré, exemples concrets à l'appui.",
-        "Un peu dense, mais les pages clés sont identifiées.",
-        "Parfait pour une mise en pratique immédiate."
+        "Document solide, mais faudrait creuser les implementations.",
+        "Tres bien structure, exemples concrets a l'appui.",
+        "Un peu dense, mais les pages cles sont identifiees.",
+        "Parfait pour une mise en pratique immediate."
     ])
     return response
 
 st.set_page_config(page_title="DocMaster AI", layout="wide")
-st.title("?? DocMaster AI - Analyse Documents Humaine")
+st.title("ğŸ“š DocMaster AI - Analyse Documents Humaine")
 col1,col2=st.columns([1,3])
 with col1:
-    st.markdown("### ?? Fonctionnalités")
-    st.markdown("- ? Lecture complète du document\n- ? Citations de pages\n- ? Style humain\n- ? Synthèse automatique")
-    task = st.selectbox("Type d'analyse", ["Résumé complet","Analyse détaillée"])
-    query = st.text_input("Question précise","Explique le concept principal")
+    st.markdown("### ğŸ”§ Fonctionnalites")
+    st.markdown("- âœ… Lecture complete du document\n- âœ… Citations de pages\n- âœ… Style humain\n- âœ… Synthese automatique")
+    task = st.selectbox("Type d'analyse", ["Resume complet","Analyse detaillee"])
+    query = st.text_input("Question precise","Explique le concept principal")
 with col2:
-    uploaded_file = st.file_uploader("?? Upload PDF ou TXT", type=["pdf","txt"])
-if uploaded_file and st.button("?? ANALYSER"):
+    uploaded_file = st.file_uploader("ğŸ“ Upload PDF ou TXT", type=["pdf","txt"])
+if uploaded_file and st.button("ğŸš€ ANALYSER"):
     analyzer = DocAnalyzer()
     with st.spinner("Analyse du document..."):
         if uploaded_file.type=="application/pdf":
@@ -119,9 +118,9 @@ if uploaded_file and st.button("?? ANALYSER"):
         elif uploaded_file.type=="text/plain":
             analyzer.load_txt(uploaded_file)
         else:
-            st.error("Format non supporté")
+            st.error("Format non supporte")
             st.stop()
         result = generate_human_response(analyzer.pages, task, query)
-    st.markdown("## ?? ANALYSE")
+    st.markdown("## ğŸ“– ANALYSE")
     st.markdown(result)
-    st.download_button("?? Télécharger l'analyse", result, f"analyse_{analyzer.metadata['title']}.md","text/markdown")
+    st.download_button("ğŸ’¾ Telecharger l'analyse", result, f"analyse_{analyzer.metadata['title']}.md","text/markdown")
